@@ -209,9 +209,14 @@ shielddelay2 = 0
 mortarexploded2 = False
 mortarexplodedframe2 = 0
 #
-underground3 = False
-randomnumber = 0
-bootup = 10
+underground3 = False #ai checking if it can shoot player 1
+randomnumber = 0 #ai random number
+bootup = 10 #ai bootup time
+firewall = 0 #ai shield time (randomized)
+shellshocked = False #ai running from mortars
+shellshockeddir = "l" #direction ai is running
+mortarspot = 0 #place mortar will hit
+shellshockedish = False #stops ai from running back into mortars
 
 tie = False
 
@@ -292,6 +297,22 @@ while running:
         wepframe1 = 0
         framecount1 = 0
         wepphase1 = 0
+        randomnumber = random.randint(1,100)
+        if randomnumber <= 50:
+            shellshocked = True
+            shellshockedish = True
+            if play2x - play1x + 600 > 0:
+                shellshockeddir = "r"
+                mortarspot = play1x + 725
+            if play2x - play1x + 600 < 0:
+                shellshockeddir = "l"
+                mortarspot = play1x + 475
+            if play2x - play1x + 600 == 0:
+                randomnumber = random.randint(1,100)
+                if randomnumber <= 50:
+                    shellshockeddir = "l"
+                else:
+                    shellshockeddir = "r"
         if play1lr == "l":
             wepframe1 = 9
     if keystate[K_h] and shooting1 == False: #assault rifle
@@ -409,92 +430,48 @@ while running:
     #011110101011111101010101001010101010001010011010000111010010010101010101001
     if ai:
         if not shooting2 and bootup <= 0:
-            if play1y > play2y - 50 and play1y < play2y + 50:
+            underground3 = False
+            for numb in range(play2x + 45, width):
+                if play2y - 5 >= ground[numb]:
+                    underground3 = True
+            if play1y > play2y - 50 and play1y < play2y + 50 and not underground3 and not shellshocked:
                 walking2 = False
-                underground3 = False
-                for numb in range(play2x + 45, width):
-                    if play2y - 5 >= ground[numb]:
-                        underground3 = True
-                if underground3 == False:
-                    if play1x < play2x:
-                        play2lr = "l"
-                    if play1x > play2x:
-                        play2lr = "r"
-                    if abs(play2x - play1x) <= 200:
-                        randomnumber = random.randint(1, 100)
-                        if randomnumber <= 50:
-                            shootingwep2 = 1
-                            shooting2 = True
-                            wepframe1 = 0
-                            framecount1 = 0
-                            wepphase1 = 0
-                            if play1lr == "l":
-                                wepframe1 = 6
-                        else:
-                            shootingwep2 = 4
-                            shooting2 = True
-                            wepframe2 = 0
-                            framecount2 = 0
-                            wepphase2 = 0
-                            underground2 = False
-                            if play2lr == "l":
-                                wepframe2 = 6
-                    if abs(play2x - play1x) >= 201 and abs(play2x - play1x) <= 550:
-                        randomnumber = random.randint(1, 100)
-                        if randomnumber <= 25:
-                            shootingwep2 = 1
-                            shooting2 = True
-                            wepframe1 = 0
-                            framecount1 = 0
-                            wepphase1 = 0
-                            if play1lr == "l":
-                                wepframe1 = 6
-                        if randomnumber >= 26 and randomnumber <= 50:
-                            shootingwep2 = 2
-                            shooting2 = True
-                            wepframe2 = 0
-                            framecount2 = 0
-                            wepphase2 = 0
-                            underground2 = False
-                            if play2lr == "l":
-                                wepframe2 = 6
-                        if randomnumber >= 51:
-                            shootingwep2 = 4
-                            shooting2 = True
-                            wepframe2 = 0
-                            framecount2 = 0
-                            wepphase2 = 0
-                            underground2 = False
-                            if play2lr == "l":
-                                wepframe2 = 6
-                    if abs(play2x - play1x) >= 551 and abs(play2x - play1x) <= 650:
-                        randomnumber = random.randint(1,100)
-                        if randomnumber <= 75 and mortarshot2 == False:
-                            shootingwep2 = 3
-                            shooting2 = True
-                            wepframe2 = 0
-                            framecount2 = 0
-                            wepphase2 = 0
-                            if play2lr == "l":
-                                wepframe2 = 9
-                        if randomnumber >= 76 and randomnumber <= 90:
-                            shootingwep2 = 1
-                            shooting2 = True
-                            wepframe1 = 0
-                            framecount1 = 0
-                            wepphase1 = 0
-                            if play1lr == "l":
-                                wepframe1 = 6
-                        if randomnumber >= 91:
-                            shootingwep2 = 2
-                            shooting2 = True
-                            wepframe2 = 0
-                            framecount2 = 0
-                            wepphase2 = 0
-                            underground2 = False
-                            if play2lr == "l":
-                                wepframe2 = 6
-                    if abs(play2x - play1x) >= 651:
+                if play1x < play2x:
+                    play2lr = "l"
+                if play1x > play2x:
+                    play2lr = "r"
+                if abs(play2x - play1x) <= 200:
+                    randomnumber = random.randint(1, 100)
+                    if randomnumber <= 50:
+                        shootingwep2 = 1
+                        shooting2 = True
+                        wepframe1 = 0
+                        framecount1 = 0
+                        wepphase1 = 0
+                        firewall = random.randint(25,50)
+                        if play1lr == "l":
+                            wepframe1 = 6
+                    else:
+                        shootingwep2 = 4
+                        shooting2 = True
+                        wepframe2 = 0
+                        framecount2 = 0
+                        wepphase2 = 0
+                        underground2 = False
+                        if play2lr == "l":
+                            wepframe2 = 6
+                if abs(play2x - play1x) >= 201 and abs(play2x - play1x) <= 550:
+                    randomnumber = random.randint(1, 100)
+                    if randomnumber <= 25:
+                        shootingwep2 = 1
+                        shooting2 = True
+                        wepframe1 = 0
+                        framecount1 = 0
+                        wepphase1 = 0
+                        firewall = random.randint(25,50)
+                        if play1lr == "l":
+                            wepframe1 = 6
+                    if randomnumber >= 26 and randomnumber <= 50:
                         shootingwep2 = 2
                         shooting2 = True
                         wepframe2 = 0
@@ -503,29 +480,102 @@ while running:
                         underground2 = False
                         if play2lr == "l":
                             wepframe2 = 6
+                    if randomnumber >= 51:
+                        shootingwep2 = 4
+                        shooting2 = True
+                        wepframe2 = 0
+                        framecount2 = 0
+                        wepphase2 = 0
+                        underground2 = False
+                        if play2lr == "l":
+                            wepframe2 = 6
+                if abs(play2x - play1x) >= 551 and abs(play2x - play1x) <= 650:
+                    randomnumber = random.randint(1,100)
+                    if randomnumber <= 75 and mortarshot2 == False:
+                        shootingwep2 = 3
+                        shooting2 = True
+                        wepframe2 = 0
+                        framecount2 = 0
+                        wepphase2 = 0
+                        if play2lr == "l":
+                            wepframe2 = 9
+                    if randomnumber >= 76 and randomnumber <= 90:
+                        shootingwep2 = 1
+                        shooting2 = True
+                        wepframe1 = 0
+                        framecount1 = 0
+                        wepphase1 = 0
+                        firewall = random.randint(25,50)
+                        if play1lr == "l":
+                            wepframe1 = 6
+                    if randomnumber >= 91:
+                        shootingwep2 = 2
+                        shooting2 = True
+                        wepframe2 = 0
+                        framecount2 = 0
+                        wepphase2 = 0
+                        underground2 = False
+                        if play2lr == "l":
+                            wepframe2 = 6
+                if abs(play2x - play1x) >= 651:
+                    shootingwep2 = 2
+                    shooting2 = True
+                    wepframe2 = 0
+                    framecount2 = 0
+                    wepphase2 = 0
+                    underground2 = False
+                    if play2lr == "l":
+                        wepframe2 = 6
             else:
                 walking2 = True
-                if play2x > play1x:
-                    play2x = play2x - 8
-                    if play2x <= 0:
-                        play2x = 0
-                    if not moonwalk:
-                        play2lr = "l"
-                    else:
-                        play2lr = "r"
-                if play2x < play1x:
-                    play2x = play2x + 8
-                    if play2x >= width:
-                        play2x = width
-                    if not moonwalk:
-                        play2lr = "r"
-                    else:
-                        play2lr = "l"
-                if play2x == play1x:
-                    walking2 = False
+                if not shellshocked or not shellshockedish:
+                    if play2x > play1x:
+                        play2x = play2x - 8
+                        if play2x <= 0:
+                            play2x = 0
+                        if not moonwalk:
+                            play2lr = "l"
+                        else:
+                            play2lr = "r"
+                    if play2x < play1x:
+                        play2x = play2x + 8
+                        if play2x >= width:
+                            play2x = width
+                        if not moonwalk:
+                            play2lr = "r"
+                        else:
+                            play2lr = "l"
+                    if play2x == play1x:
+                        walking2 = False
+                        
+                if shellshocked:
+                    if shellshockeddir == "l":
+                        play2x = play2x - 8
+                        if play2x <= mortarspot:
+                            shellshocked = False
+                        if play2x <= 0:
+                            play2x = 0
+                        if not moonwalk:
+                            play2lr = "l"
+                        else:
+                            play2lr = "r"
+                    if shellshockeddir == "r":
+                        play2x = play2x + 8
+                        if play2x >= mortarspot:
+                            shellshocked = False
+                        if play2x >= width:
+                            play2x = width
+                        if not moonwalk:
+                            play2lr = "r"
+                        else:
+                            play2lr = "l"
+                        
         else:
-            if not bootup <= 0:
+            if shooting2 and firewall > 0:
+                firewall -= 1
+            if bootup >= 0:
                 bootup -= 1
+                
 
     #processes weapon inputs, draws player when shooting
     play1y = ground[play1x]-47
@@ -664,8 +714,15 @@ while running:
                         wepphase2 = 1
                         shield2 -= 5
                 if wepphase2 == 1:
-                    if shield2 >= 0 and keystate[K_DOWN]:
-                        shield2 -= 2
+                    if shield2 >= 0:
+                        if keystate[K_DOWN] and not ai:
+                            shield2 -= 2
+                        else:
+                            wepphase2 = 2
+                        if ai and firewall > 0:
+                            shield2 -= 2
+                        else:
+                            wepphase2 = 2
                     else:
                         wepphase2 = 2
                 if wepphase2 == 2:
@@ -796,6 +853,8 @@ while running:
             mortarshot1 = False
         if mortary1 >= ground[mortarx1]:
             mortarshot1 = False
+            shellshocked = False
+            shellshockedish = False
             mortarexploded1 = True
             mortarexplodedframe1 = 1
             if play2x <= mortarx1 + 125 and play2x >= mortarx1 - 125:
