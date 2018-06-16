@@ -528,7 +528,7 @@ while running:
                         wepframe2 = 6
             else:
                 walking2 = True
-                if not shellshocked or not shellshockedish:
+                if not shellshockedish:
                     if play2x > play1x:
                         play2x = play2x - 8
                         if play2x <= 0:
